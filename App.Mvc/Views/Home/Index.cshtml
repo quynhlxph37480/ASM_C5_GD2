@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    @{
+        if(User.Identity.IsAuthenticated)
+        {
+            <h1 class="display-4 mt-3">Welcome @User.Identity.Name</h1>
+        }
+        else
+        {
+            <h1 class="display-4 mt-3">Not logged in yet</h1>
+        }
+    }
+   
+</div>
+@{
+    if(TempData["thatbai"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["thatbai"]
+        </div>
+    }
+    if(TempData["thanhcong"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["thanhcong"]
+        </div>
+    }
+}
+
+

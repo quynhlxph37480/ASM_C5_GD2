@@ -1,0 +1,82 @@
+﻿@model App.Data.Entities.AddressViewModel
+
+@{
+    ViewData["Title"] = "Chọn Địa Chỉ";
+}
+
+<h2>Chọn Địa Chỉ</h2>
+
+<form asp-action="SubmitAddress" method="post">
+    <div class="form-group">
+        <label for="province">Tỉnh</label>
+        <select asp-for="SelectedProvince" class="form-control" id="province" onchange="loadDistricts()">
+            <option value="">Chọn Tỉnh</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="district">Huyện</label>
+        <select asp-for="SelectedDistrict" class="form-control" id="district" onchange="loadCommunes()">
+            <option value="">Chọn Huyện</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="commune">Xã</label>
+        <select asp-for="SelectedCommune" class="form-control" id="commune">
+            <option value="">Chọn Xã</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            loadProvinces();
+        });
+
+        function loadProvinces() {
+            $.getJSON('/api/address/provinces', function (data) {
+                var provinceSelect = $('#province');
+                provinceSelect.empty();
+                provinceSelect.append('<option value="">Chọn Tỉnh</option>');
+                $.each(data, function (index, item) {
+                    provinceSelect.append('<option value="' + item.provinceID + '">' + item.provinceName + '</option>');
+                });
+            });
+        }
+
+        function loadDistricts() {
+            var provinceId = $('#province').val();
+            if (provinceId) {
+                $.getJSON('/api/address/districts', { provinceId: provinceId }, function (data) {
+                    var districtSelect = $('#district');
+                    districtSelect.empty();
+                    districtSelect.append('<option value="">Chọn Huyện</option>');
+                    $.each(data, function (index, item) {
+                        districtSelect.append('<option value="' + item.districtID + '">' + item.districtName + '</option>');
+                    });
+                    $('#commune').empty().append('<option value="">Chọn Xã</option>'); // Reset commune dropdown
+                });
+            } else {
+                $('#district').empty().append('<option value="">Chọn Huyện</option>');
+                $('#commune').empty().append('<option value="">Chọn Xã</option>');
+            }
+        }
+
+        function loadCommunes() {
+            var districtId = $('#district').val();
+            if (districtId) {
+                $.getJSON('/api/address/communes', { districtId: districtId }, function (data) {
+                    var communeSelect = $('#commune');
+                    communeSelect.empty();
+                    communeSelect.append('<option value="">Chọn Xã</option>');
+                    $.each(data, function (index, item) {
+                        communeSelect.append('<option value="' + item.communeID + '">' + item.communeName + '</option>');
+                    });
+                });
+            } else {
+                $('#commune').empty().append('<option value="">Chọn Xã</option>');
+            }
+        }
+    </script>
+}
